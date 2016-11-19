@@ -38,9 +38,18 @@ export default class ArtistBox extends Component {
 
 const styles = StyleSheet.create({
   artistBox: {
-    margin: 5,
     backgroundColor: '#F5FCFF',
     flexDirection: 'row',
+    shadowColor: 'black',
+    shadowOffset: {
+      height: 1,
+      width: -2,
+    },
+    shadowRadius: 1,
+    shadowOpacity: .5,
+    marginHorizontal: 8,
+    marginBottom: 8,
+    elevation: 2,
   },
   image: {
     width: 150,
