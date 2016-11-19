@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 15,
+    color: '#333'
   },
   centeredRow: {
     flexDirection: 'row',
