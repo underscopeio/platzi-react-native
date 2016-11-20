@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -11,35 +5,25 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import ArtistList from './ArtistList'
+import {
+  Scene,
+  Router
+} from 'react-native-router-flux';
 
-import { getArtists } from './api-client'
+import HomeView from './HomeView'
+import ArtistDetailView from './ArtistDetailView'
 
-export default class PlatziMusic extends Component {
-  state = {
-    artists: []
-  }
-
-  componentDidMount() {
-    getArtists()
-      .then(artists => this.setState({ artists }))
-  }
-
+class PlatziMusic extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <ArtistList artists={this.state.artists} />
-      </View>
-    );
+      <Router>
+        <Scene key="root" hideNavBar>
+          <Scene key="home" component={HomeView}/>
+          <Scene key="artistDetail" component={ArtistDetailView}/>
+        </Scene>
+      </Router>
+    )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'lightgray',
-    paddingTop: 20,
-  },
-});
 
 AppRegistry.registerComponent('PlatziMusic', () => PlatziMusic);

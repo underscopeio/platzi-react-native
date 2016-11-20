@@ -3,7 +3,10 @@ import {
   ListView,
   ActivityIndicator,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
+
+import { Actions } from 'react-native-router-flux'
 
 import ArtistBox from './ArtistBox'
 
@@ -31,6 +34,10 @@ export default class ArtistList extends Component {
     }
   }
 
+  handleBoxPress(artist) {
+    Actions.artistDetail({ artist })
+  }
+
   render() {
     if (this.props.artists.length === 0) {
       return <ActivityIndicator color="black" size="large" style={styles.loading} />
@@ -40,7 +47,12 @@ export default class ArtistList extends Component {
       <ListView
         enableEmptySections={true}
         dataSource={this.state.artistDataSource}
-        renderRow={artist => <ArtistBox artist={artist} />}
+        renderRow={
+          artist =>
+            <TouchableOpacity onPress={() => this.handleBoxPress(artist)}>
+              <ArtistBox artist={artist} />
+            </TouchableOpacity>
+        }
       />
     );
   }
