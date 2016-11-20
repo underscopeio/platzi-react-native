@@ -12,13 +12,23 @@ import {
 } from 'react-native';
 
 import ArtistList from './ArtistList'
-import { artistList } from './artists-data'
+
+import { getArtists } from './api-client'
 
 export default class PlatziMusic extends Component {
+  state = {
+    artists: []
+  }
+
+  componentDidMount() {
+    getArtists()
+      .then(artists => this.setState({ artists }))
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <ArtistList artists={artistList} />
+        <ArtistList artists={this.state.artists} />
       </View>
     );
   }
