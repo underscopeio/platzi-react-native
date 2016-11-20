@@ -7,24 +7,18 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
   View,
+  StyleSheet,
 } from 'react-native';
 
-import ArtistBox from './ArtistBox'
+import ArtistList from './ArtistList'
+import { artistList } from './artists-data'
 
 export default class PlatziMusic extends Component {
   render() {
-    const artist = {
-      image: 'https://lastfm-img2.akamaized.net/i/u/300x300/31a51f6e3ec647c8997150ec837891c7.png',
-      name: 'David Bowie',
-      likes: 200,
-      comments: 115,
-    }
-
     return (
       <View style={styles.container}>
-        <ArtistBox artist={artist} />
+        <ArtistList artists={artistList} />
       </View>
     );
   }
