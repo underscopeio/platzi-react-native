@@ -2,8 +2,21 @@ import React, { Component } from 'react'
 import { AppRegistry, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import FBSDK from 'react-native-fbsdk'
 import { Actions } from 'react-native-router-flux'
+import * as firebase from 'firebase'
 
 const { LoginButton, AccessToken } = FBSDK
+
+const config = {
+  apiKey: "AIzaSyD1l0Y2VrOh8MR2KsyM9T400xDg-qwf0YY",
+  authDomain: "platzi-music.firebaseapp.com",
+  databaseURL: "https://platzi-music.firebaseio.com",
+  storageBucket: "platzi-music.appspot.com",
+  messagingSenderId: "1085956110503"
+}
+
+firebase.initializeApp(config)
+
+const firebaseAuth = firebase.auth()
 
 export default class LoginView extends Component {
   state = {
@@ -11,8 +24,23 @@ export default class LoginView extends Component {
   }
 
   componentWillMount() {
+    this.authenticateUser()
+  }
+
+  authenticateUser() {
     AccessToken.getCurrentAccessToken()
-      .then(credentials => this.setState({ credentials }))
+      .then(credentials => {
+        if (!credentials) {
+          return null
+        }
+
+        const { FacebookAuthProvider } = firebase.auth
+        const credential = FacebookAuthProvider.credential(credentials.accessToken)
+        return firebaseAuth.signInWithCredential(credential)
+      })
+      .then(credentials => {
+        this.setState({ credentials })
+      })
   }
 
   handleOnLoginFinished(error, result) {
@@ -21,10 +49,7 @@ export default class LoginView extends Component {
     } else if (result.isCancelled) {
       alert('Login was cancelled')
     } else {
-      AccessToken.getCurrentAccessToken()
-        .then(credentials => {
-          this.setState({ credentials })
-      })
+      this.authenticateUser()
     }
   }
 
@@ -45,6 +70,7 @@ export default class LoginView extends Component {
 
         {this.state.credentials !== null &&
           <TouchableOpacity style={styles.button} onPress={() => this.handlePlatziMusicButtonPress()}>
+            <Text>Hi {this.state.credentials.displayName},</Text>
             <Text>Go to PlatziMusic!</Text>
           </TouchableOpacity>
         }
@@ -75,6 +101,7 @@ const styles = StyleSheet.create({
   button: {
     padding: 15,
     margin: 10,
+    alignItems: 'center',
     backgroundColor: 'lightgray',
   }
 })
