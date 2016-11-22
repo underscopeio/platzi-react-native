@@ -10,16 +10,18 @@ import {
   Router
 } from 'react-native-router-flux';
 
+import LoginView from './LoginView'
 import HomeView from './HomeView'
 import ArtistDetailView from './ArtistDetailView'
 
 class PlatziMusic extends React.Component {
   render() {
     return (
-      <Router>
-        <Scene key="root" hideNavBar>
-          <Scene key="home" component={HomeView}/>
-          <Scene key="artistDetail" component={ArtistDetailView}/>
+      <Router>        
+        <Scene key="login" component={LoginView} hideNavBar />
+        <Scene key="root" hideNavBar type="replace">
+          <Scene key="home" component={HomeView} />
+          <Scene key="artistDetail" component={ArtistDetailView} />
         </Scene>
       </Router>
     )
