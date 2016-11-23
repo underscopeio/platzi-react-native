@@ -1,8 +1,11 @@
 package com.platzimusic;
 
+import android.content.Intent;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
+
 
 public class MainActivity extends ReactActivity {
 
@@ -14,4 +17,10 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "PlatziMusic";
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        MainApplication.getCallbackManager().onActivityResult(requestCode, resultCode, data);
+    }    
 }
