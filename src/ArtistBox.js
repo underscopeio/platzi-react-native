@@ -4,13 +4,81 @@ import {
   Text,
   View,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons'
+import { firebaseAuth, firebaseDatabase } from './firebase'
 
 export default class ArtistBox extends Component {
+
+  state = {
+    liked: null,
+    likeCount: null,
+  }
+
+  componentWillMount() {
+    this.getArtistRef().on('value', this.handleArtistOnValue)
+  }
+
+  componentWillUnmount() {
+    this.getArtistRef().off('value', this.handleArtistOnValue)
+  }
+
+  handleArtistOnValue = snapshot => {
+    const userId = firebaseAuth.currentUser.uid
+
+    const artist = snapshot.val()
+
+    if (!artist) {
+      return this.getArtistRef().set({ likeCount: 0 })
+    }
+
+    const likeCount = artist.likeCount
+    const liked = artist.likes && artist.likes[userId]
+
+    this.setState({ liked, likeCount })
+  }
+
+  handleToggleLikeButtonPress = () => {
+    const { likeCount, liked } = this.state
+
+    if (this.busy || likeCount === null || liked === null) {
+      return
+    }
+
+    this.busy = true
+
+    const userId = firebaseAuth.currentUser.uid
+
+    this.getArtistRef().transaction(artist => {
+      if (artist) {
+        if (artist.likes && artist.likes[userId]) {
+          artist.likeCount--
+          artist.likes[userId] = null
+        } else {
+          artist.likeCount++
+          if (!artist.likes) {
+            artist.likes = {}
+          }
+          artist.likes[userId] = true
+        }
+      }
+
+      return artist
+    })
+    .then(() => this.busy = false)
+  }
+
+  getArtistRef() {
+    const artistId = this.props.artist.id
+
+    return firebaseDatabase.ref(`artists/${artistId}`)
+  }
+
   render() {
-    const { image, name, likes, comments } = this.props.artist
+    const { image, name, comments } = this.props.artist
+    const { likeCount, liked } = this.state
 
     return (
       <View style={styles.artistBox}>
@@ -21,8 +89,11 @@ export default class ArtistBox extends Component {
 
           <View style={styles.centeredRow}>
             <View style={styles.iconContainer}>
-              <Icon name="ios-heart-outline" size={32} color="gray" />
-              <Text style={styles.iconText}>{likes}</Text>
+              <TouchableOpacity onPress={this.handleToggleLikeButtonPress}>
+                <Icon name={liked ? 'ios-heart' : 'ios-heart-outline'} size={32} color="gray" />
+              </TouchableOpacity>
+
+              <Text style={styles.iconText}>{likeCount}</Text>
             </View>
 
             <View style={styles.iconContainer}>
