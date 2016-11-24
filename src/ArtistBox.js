@@ -13,64 +13,72 @@ import { firebaseAuth, firebaseDatabase } from './firebase'
 export default class ArtistBox extends Component {
 
   state = {
-    busy: false,
     liked: null,
-    likes: null,
+    likeCount: null,
   }
 
   componentWillMount() {
-    this.getArtistLikesRef().on('value', this.handleArtistLikesOnValue)
-    this.getArtistLikeCountRef().on('value', this.handleArtistLikeCountOnValue)
+    this.getArtistRef().on('value', this.handleArtistOnValue)
   }
 
   componentWillUnmount() {
-    this.getArtistLikesRef().off('value', this.handleArtistLikesOnValue)
-    this.getArtistLikeCountRef().off('value', this.handleArtistLikeCountOnValue)
+    this.getArtistRef().off('value', this.handleArtistOnValue)
   }
 
-  handleArtistLikesOnValue = snapshot => {
-    this.setState({ liked: snapshot.val() === true })
-  }
+  handleArtistOnValue = snapshot => {
+    const userId = firebaseAuth.currentUser.uid
 
-  handleArtistLikeCountOnValue = snapshot => {
-    this.setState({ likes: snapshot.val() || 0 })
+    const artist = snapshot.val()
+
+    if (!artist) {
+      return this.getArtistRef().set({ likeCount: 0 })
+    }
+
+    const likeCount = artist.likeCount
+    const liked = artist.likes && artist.likes[userId]
+
+    this.setState({ liked, likeCount })
   }
 
   handleToggleLikeButtonPress = () => {
-    const { likes, liked, busy } = this.state
+    const { likeCount, liked } = this.state
 
-    if (likes === null || liked === null || busy) {
+    if (this.busy || likeCount === null || liked === null) {
       return
     }
 
-    this.setState({ busy: true })
+    this.busy = true
 
-    this.getArtistLikeCountRef().transaction(val => {
-      val = (val || 0)
-      return val + (liked ? -1 : 1)
-    })
-
-    this.getArtistLikesRef().set(!liked).then(() => {
-      this.setState({ busy: false })
-    })
-  }
-
-  getArtistLikesRef() {
-    const artistId = this.props.artist.id
     const userId = firebaseAuth.currentUser.uid
 
-    return firebaseDatabase.ref(`artists/${artistId}/likes/${userId}`)
+    this.getArtistRef().transaction(artist => {
+      if (artist) {
+        if (artist.likes && artist.likes[userId]) {
+          artist.likeCount--
+          artist.likes[userId] = null
+        } else {
+          artist.likeCount++
+          if (!artist.likes) {
+            artist.likes = {}
+          }
+          artist.likes[userId] = true
+        }
+      }
+
+      return artist
+    })
+    .then(() => this.busy = false)
   }
 
-  getArtistLikeCountRef() {
+  getArtistRef() {
     const artistId = this.props.artist.id
 
-    return firebaseDatabase.ref(`artists/${artistId}/likeCount`)
+    return firebaseDatabase.ref(`artists/${artistId}`)
   }
 
   render() {
     const { image, name, comments } = this.props.artist
-    const { likes, liked, busy } = this.state
+    const { likeCount, liked } = this.state
 
     return (
       <View style={styles.artistBox}>
@@ -85,7 +93,7 @@ export default class ArtistBox extends Component {
                 <Icon name={liked ? 'ios-heart' : 'ios-heart-outline'} size={32} color="gray" />
               </TouchableOpacity>
 
-              <Text style={styles.iconText}>{likes}</Text>
+              <Text style={styles.iconText}>{likeCount}</Text>
             </View>
 
             <View style={styles.iconContainer}>
