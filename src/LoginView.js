@@ -15,7 +15,7 @@ export default class LoginView extends Component {
     this.authenticateUser()
   }
 
-  authenticateUser() {
+  authenticateUser = () => {
     AccessToken.getCurrentAccessToken()
       .then(credentials => {
         if (!credentials) {
@@ -31,9 +31,9 @@ export default class LoginView extends Component {
       })
   }
 
-  handleOnLoginFinished(error, result) {
+  handleOnLoginFinished = (error, result) => {
     if (error) {
-      alert('Login failed with error: ' + result.error)
+      console.error(error)
     } else if (result.isCancelled) {
       alert('Login was cancelled')
     } else {
@@ -41,7 +41,7 @@ export default class LoginView extends Component {
     }
   }
 
-  handleOnLogoutFinished() {
+  handleOnLogoutFinished = () => {
     this.setState({ credentials: null })
   }
 
@@ -65,8 +65,8 @@ export default class LoginView extends Component {
 
         <LoginButton
           readPermissions={['public_profile', 'email']}
-          onLoginFinished={(error, result) => this.handleOnLoginFinished(error, result)}
-          onLogoutFinished={() => this.handleOnLogoutFinished()}
+          onLoginFinished={this.handleOnLoginFinished}
+          onLogoutFinished={this.handleOnLogoutFinished}
         />
 
       </View>

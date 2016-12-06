@@ -7,12 +7,12 @@
       <dict>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>fb1788844961356591</string>
+        <string>fb381058705569169</string>
       </array>
       </dict>
     </array>
     <key>FacebookAppID</key>
-    <string>1788844961356591</string>
+    <string>381058705569169</string>
     <key>FacebookDisplayName</key>
     <string>PlatziMusic</string>
 
@@ -23,7 +23,7 @@
       <string>fbauth2</string>
       <string>fbshareextension</string>
     </array>
-    
+
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleExecutable</key>

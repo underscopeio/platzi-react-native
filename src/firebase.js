@@ -1,11 +1,11 @@
 import * as firebase from 'firebase'
 
 const config = {
-  apiKey: "AIzaSyD1l0Y2VrOh8MR2KsyM9T400xDg-qwf0YY",
-  authDomain: "platzi-music.firebaseapp.com",
-  databaseURL: "https://platzi-music.firebaseio.com",
-  storageBucket: "platzi-music.appspot.com",
-  messagingSenderId: "1085956110503"
+  apiKey: "AIzaSyCrNKZFhNIOLOr6a4hmXRCL6gJZi5F-Tt0",
+  authDomain: "platzimusic.firebaseapp.com",
+  databaseURL: "https://platzimusic.firebaseio.com",
+  storageBucket: "platzimusic.appspot.com",
+  messagingSenderId: "383576358540"
 }
 
 firebase.initializeApp(config)

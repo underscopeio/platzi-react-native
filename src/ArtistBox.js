@@ -79,6 +79,9 @@ export default class ArtistBox extends Component {
   render() {
     const { image, name, comments } = this.props.artist
     const { likeCount, liked } = this.state
+    const likeIcon = liked ?
+      <Icon name="ios-heart" size={32} color="#e74c3c" /> :
+      <Icon name="ios-heart-outline" size={30} color="gray" />
 
     return (
       <View style={styles.artistBox}>
@@ -90,7 +93,7 @@ export default class ArtistBox extends Component {
           <View style={styles.centeredRow}>
             <View style={styles.iconContainer}>
               <TouchableOpacity onPress={this.handleToggleLikeButtonPress}>
-                <Icon name={liked ? 'ios-heart' : 'ios-heart-outline'} size={32} color="gray" />
+                {likeIcon}
               </TouchableOpacity>
 
               <Text style={styles.iconText}>{likeCount}</Text>
