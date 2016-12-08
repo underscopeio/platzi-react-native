@@ -1,14 +1,29 @@
-import React, { Component } from 'react'
-import { AppRegistry, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import FBSDK from 'react-native-fbsdk'
-import { Actions } from 'react-native-router-flux'
-import firebase, { firebaseAuth } from './firebase'
+import React, { Component } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 
-const { LoginButton, AccessToken } = FBSDK
+import FBSDK, {
+  LoginButton,
+  AccessToken
+} from 'react-native-fbsdk'
+
+import { Actions } from 'react-native-router-flux'
+
+import firebase, {
+  firebaseAuth
+} from './firebase'
+
+const { FacebookAuthProvider } = firebase.auth
 
 export default class LoginView extends Component {
   state = {
-  	credentials: null
+    credentials: null
   }
 
   componentWillMount() {
@@ -16,80 +31,74 @@ export default class LoginView extends Component {
   }
 
   authenticateUser = () => {
-    AccessToken.getCurrentAccessToken()
-      .then(credentials => {
-        if (!credentials) {
-          return null
-        }
-
-        const { FacebookAuthProvider } = firebase.auth
-        const credential = FacebookAuthProvider.credential(credentials.accessToken)
-        return firebaseAuth.signInWithCredential(credential)
-      })
-      .then(credentials => {
-        this.setState({ credentials })
-      })
+    this.setState({ loading: true })
+    AccessToken.getCurrentAccessToken().then((data) => {
+      if (!data) {
+        return
+      }
+      const { accessToken } = data
+      const credential = FacebookAuthProvider.credential(accessToken)
+      firebaseAuth.signInWithCredential(credential).then((credentials) => {
+        Actions.root()
+      }, (error) => {
+        console.log("Sign In Error", error);
+      });
+    })
   }
 
-  handleOnLoginFinished = (error, result) => {
+  handleLoginFinished = (error, result) => {
     if (error) {
       console.error(error)
     } else if (result.isCancelled) {
-      alert('Login was cancelled')
+      alert("login is cancelled.");
     } else {
       this.authenticateUser()
     }
   }
 
-  handleOnLogoutFinished = () => {
-    this.setState({ credentials: null })
-  }
-
-  handlePlatziMusicButtonPress() {
-    Actions.root()
-  }
-
   render() {
     return (
-      <View style={styles.container}>
+      <Image source={require('./background.jpg')} style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to PlatziMusic!
+          Bienvenidos a PlatziMusic
         </Text>
-
-        {this.state.credentials !== null &&
-          <TouchableOpacity style={styles.button} onPress={() => this.handlePlatziMusicButtonPress()}>
-            <Text>Hi {this.state.credentials.displayName},</Text>
-            <Text>Go to PlatziMusic!</Text>
-          </TouchableOpacity>
-        }
-
+        <Image source={require('./logo.png')} style={styles.logo} />
+        <ActivityIndicator
+          style={styles.spinner}
+          size="large"
+          color="white"
+          animating={this.state.loading} />
         <LoginButton
           readPermissions={['public_profile', 'email']}
-          onLoginFinished={this.handleOnLoginFinished}
-          onLogoutFinished={this.handleOnLogoutFinished}
-        />
-
-      </View>
-    )
+          onLoginFinished={this.handleLoginFinished}
+          onLogoutFinished={() => alert("logout.")}/>
+      </Image>
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: null,
+    height: null,
+    backgroundColor: 'lightgray',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    alignItems: 'center'
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 15,
+  },
+  spinner: {
+    marginVertical: 10,
   },
   welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  button: {
-    padding: 15,
-    margin: 10,
-    alignItems: 'center',
-    backgroundColor: 'lightgray',
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 20,
+    backgroundColor: 'transparent',
+    color: 'white',
   }
-})
+});
