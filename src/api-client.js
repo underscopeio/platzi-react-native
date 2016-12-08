@@ -1,4 +1,4 @@
-const API_KEY = '413833405fad2fb8932b2f0299c42e63'
+const API_KEY = 'e5f95ee46580f32ab850e3cbfddec906'
 const ARTISTS_URL = `https://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=argentina&api_key=${API_KEY}&format=json`
 
 export function getArtists() {
