@@ -34,6 +34,7 @@ export default class LoginView extends Component {
     this.setState({ loading: true })
     AccessToken.getCurrentAccessToken().then((data) => {
       if (!data) {
+        this.setState({ loading: false })
         return
       }
       const { accessToken } = data
@@ -41,6 +42,7 @@ export default class LoginView extends Component {
       firebaseAuth.signInWithCredential(credential).then((credentials) => {
         Actions.root()
       }, (error) => {
+        this.setState({ loading: false })
         console.log("Sign In Error", error);
       });
     })
